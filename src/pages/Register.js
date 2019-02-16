@@ -102,13 +102,14 @@ export default class Register extends Component {
     }
 
     createChargeRequest() {
+        this.closeModal()
         const order = store.get('order', [])
         const grandTotal = _.sumBy(order, i => parseFloat(i.price))
-        const { address } = store.get('store')
+        const address = store.get('address')
         let receipt = _.map(store.get('order'), itemReceiptLine).join("\n")
         receipt += "\n" + itemReceiptLine({ price: grandTotal.toString(), name: 'TOTAL' })
         receipt = encodeURIComponent(receipt)
-        const chargeURL = process.env.REACT_APP_BURNER_WALLET_URL + `/${address.toLowerCase()};${grandTotal};${receipt}`
+        const chargeURL = process.env.REACT_APP_BURNER_URL + `/${address.toLowerCase()};${grandTotal};${receipt}`
         console.log(chargeURL)
         const requests = store.get('requests', [])
         requests.push({

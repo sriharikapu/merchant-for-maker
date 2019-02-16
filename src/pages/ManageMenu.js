@@ -7,6 +7,7 @@ import {
 import _ from 'lodash'
 import ProfileSnippet from '../components/ProfileSnippet';
 import MenuItem from '../components/MenuItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class ManageMenu extends Component {
     constructor() {
@@ -24,7 +25,7 @@ export default class ManageMenu extends Component {
         this.setState({ menuItems })
     }
     render() {
-        const { menuItems } = this.state
+        const { menuItems, success } = this.state
 
         const menuRows = _.map(menuItems, (item, i) => {
             return <MenuItem item={item} key={i} icon='trash' onClick={this.deleteMenuItem.bind(this)} />
@@ -39,7 +40,7 @@ export default class ManageMenu extends Component {
 
             <Modal isOpen={this.state.showModal} toggle={this.toggleModal}>
             <ModalHeader toggle={this.toggle}>New Menu Item</ModalHeader>
-                <Form onSubmit={this.addMenuItem.bind(this)}>
+                {!success && <Form onSubmit={this.addMenuItem.bind(this)}>
                     <ModalBody>
                             <FormGroup>
                                 <label>Item Name</label>
@@ -56,7 +57,20 @@ export default class ManageMenu extends Component {
                         <Button color="plain" onClick={this.hideModal.bind(this)}>Cancel</Button>
                         <Button type='submit' color="primary" >Create Item</Button>
                     </ModalFooter>
-                </Form>
+                </Form>}
+
+                {success && <div>
+                    <ModalBody>
+                        <div className='m-5 text-center'>
+                            <h1><FontAwesomeIcon icon='check-circle' /></h1>
+                            <span>Successfully added menu item</span>
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="plain" onClick={this.hideModal.bind(this)}>Close</Button>
+                        <Button onClick={this.showForm.bind(this)} color="primary" >Create Another Item</Button>
+                    </ModalFooter>
+                </div>}
             </Modal>
         </div>
     }
@@ -73,6 +87,10 @@ export default class ManageMenu extends Component {
             this.setState({ menuItems })
             localStorage.setItem('menu', JSON.stringify(menuItems))
         }
+    }
+
+    showForm() {
+        this.setState({ success: false })
     }
 
     setFormField(e) {

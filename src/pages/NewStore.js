@@ -1,24 +1,31 @@
 import React, { Component } from 'react'
 import { Button, Form, FormGroup, Input } from 'reactstrap'
+import logo from '../logo.svg'
 
 export default class NewStore extends Component {
     render() {
-        return <div className='w-100 mt-3'>
-            <Form onSubmit={this.createStore.bind(this)}>
-                <FormGroup>
-                    <label>Name</label>
-                    <Input onChange={this.setName.bind(this)}
-                        placeholder="Buffi's Cafe" />
-                </FormGroup>
-                <FormGroup>
-                    <label>Store Picture</label>
-                    <Input type='file'
-                        onChange={this.setImage.bind(this)}></Input>
-                </FormGroup>
-                <FormGroup>
-                    <Button type='submit' color='primary' block={true}>Submit</Button>
-                </FormGroup>
-            </Form>
+        return <div className='full-height d-flex flex-column justify-content-center w-100'>
+            <div style={{maxWidth: '640px', margin: '0 auto'}}>
+                <img src={logo} className='mb-3' />                
+                <h5>CREATE YOUR STORE</h5>
+                <div className='p-3 border rounded shadow'>
+                    <Form onSubmit={this.createStore.bind(this)}>
+                        <FormGroup>
+                            <label>Name</label>
+                            <Input onChange={this.setName.bind(this)}
+                                placeholder="Buffi's Cafe" />
+                        </FormGroup>
+                        <FormGroup>
+                            <label>Store Picture</label>
+                            <Input type='file'
+                                onChange={this.setImage.bind(this)}></Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Button type='submit' color='primary' block={true}>Submit</Button>
+                        </FormGroup>
+                    </Form>
+                </div>
+            </div>
         </div>
     }
 

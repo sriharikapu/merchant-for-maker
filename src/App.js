@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
@@ -14,9 +13,9 @@ import Register from './pages/Register';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faCashRegister, faCog, faTrash, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
+import { faCashRegister, faCog, faTrash, faPlusSquare, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 
-library.add(fab, faCashRegister, faCog, faTrash, faPlusSquare)
+library.add(fab, faCashRegister, faCog, faTrash, faPlusSquare, faCheckCircle)
 
 class App extends Component {
   render() {
