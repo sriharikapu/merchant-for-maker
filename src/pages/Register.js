@@ -18,10 +18,6 @@ export default class Register extends Component {
         }
     }
 
-    componentDidMount() {
-        this.createChargeRequest()
-    }
-
     render() {
         const menuItems = JSON.parse(localStorage.menu)
 
@@ -100,6 +96,8 @@ export default class Register extends Component {
     }
 
     closeChargingModal() {
+        store.set('order', [])
+        this.setState({ order: [] })
         this.setState({ charging: false })
     }
 
@@ -116,6 +114,7 @@ export default class Register extends Component {
         requests.push({
             url: chargeURL
         })
+        store.set('requests', requests)
         this.setState({ chargeURL, charging: true })
     }
 
