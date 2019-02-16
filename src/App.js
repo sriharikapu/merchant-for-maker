@@ -8,14 +8,15 @@ import Store from './pages/Store'
 import Settings from './pages/Settings'
 import NewStore from './pages/NewStore';
 import ManageMenu from './pages/ManageMenu';
+import Register from './pages/Register';
 
 // icons
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
+import { faCashRegister, faCog, faTrash, faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
-library.add(fab, faCashRegister)
+library.add(fab, faCashRegister, faCog, faTrash, faPlusSquare)
 
 class App extends Component {
   render() {
@@ -27,6 +28,7 @@ class App extends Component {
             <Route path='/store/new' exact={true} component={NewStore} />
             <Route path='/store' exact={true} component={Store} />
             <Route path='/menu/manage' exact={true} component={ManageMenu} />
+            <Route path='/register' exact={true} component={Register} />
             <Route path='/' exact={true} component={Splash} />
           </div>
         </Router>
