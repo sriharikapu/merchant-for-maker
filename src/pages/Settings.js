@@ -18,8 +18,10 @@ export default class Settings extends Component {
     }
 
     deleteStore() {
-        localStorage.clear()
-        const { history } = this.props
-        history.replace('/')
+        if (window.confirm('Are you sure? Deleting your store is irreversible!')) {
+            localStorage.clear()
+            const { history } = this.props
+            history.replace('/')
+        }
     }
 }

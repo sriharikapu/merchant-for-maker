@@ -39,7 +39,8 @@ export default class NewStore extends Component {
         fr.onload = () => {
             this.setStore({
                 name,
-                image: fr.result
+                image: fr.result,
+                address: '0xb3C44Ca4e31820974015af3Ba0b29ca32E7b0d93'
             })
             this.props.history.replace('/menu/manage')
         };
