@@ -1,0 +1,4 @@
+[context.xdai.environment]
+  REACT_APP_ETHEREUM_PROVIDER="https://dai-b.poa.network"
+  REACT_APP_BURNER_NAME=xDai
+  REACT_APP_BURNER_URL="https://xdai.io" 
