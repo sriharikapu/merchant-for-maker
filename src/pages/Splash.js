@@ -30,7 +30,7 @@ export default class Splash extends Component {
                 <div className='d-flex justify-content-center flex-grow-1'>
                     <div className='text-center d-flex flex-grow flex-column justify-content-center'>
                         <div style={{maxWidth: '18em', margin: '0 auto'}} >
-                            <h5 className='mb-4'>A seamless merchant experience for {process.env.REACT_APP_BURNER_NAME}</h5>
+                            <h5 className='mb-4'>A seamless merchant experience the {process.env.REACT_APP_BURNER_NAME} burner wallet.</h5>
                             <div>
                                 <Button color='primary' size='lg' onClick={this.signIn.bind(this)}>Connect with {process.env.REACT_APP_BURNER_NAME}</Button>
                             </div>
