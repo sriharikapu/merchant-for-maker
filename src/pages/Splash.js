@@ -12,7 +12,7 @@ const slides = [
 export default class Splash extends Component {
     render() {
         return <div style={{minHeight: '100vh', backgroundImage: 'url("/geometry.png")'}}>
-            <div className='full-height d-flex flex-column pb-5'>
+            <div className='full-height d-flex flex-column justify-content-between'>
                 <div className='d-flex justify-content-around align-items-center m-3'>
                     {/* <div className='w-25 d-flex justify-content-between'>
                         <a href='#about'>About</a>
@@ -36,6 +36,14 @@ export default class Splash extends Component {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div className='d-none d-lg-block bg-danger p-2 text-center text-white'>
+                    <p>
+                        It looks like you are on a desktop, and that's OK,
+                        but we should inform you this site is best experienced
+                        on a mobile device!
+                    </p>
                 </div>
             </div>
 
