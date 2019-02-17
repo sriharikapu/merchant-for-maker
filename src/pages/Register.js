@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import QRCode from 'qrcode.react'
 import web3 from '../lib/web3';
 import decoder from 'abi-decoder'
+import abi from 'ethereumjs-abi'
+import * as utils from 'web3-utils'
 
 decoder.addABI([
     {"inputs": [{"type": "address", "name": ""}, { type: 'uint256', name: ''}, { type: 'string', name: ''}], "constant": false, "name": "transfer", "payable": false, "outputs": [{"type": "bool", "name": ""}], "type": "function"}])
@@ -21,7 +23,10 @@ export default class Register extends Component {
         this.state = {
             charging: false,
             modal: false,
-            order: store.get('order', [])
+            order: store.get('order', []),
+            payment: null,
+            paidOrder: null,
+            request: null
         }
     }
 
@@ -31,6 +36,7 @@ export default class Register extends Component {
 
         web3.eth.getTransactionCount(store.get('address'), console.log)
         web3.eth.getBlockNumber((err, num) => {
+            this.setState({ blockNumber })
             blockNumber = num
 
             this.poll = setInterval(() => {
@@ -46,16 +52,24 @@ export default class Register extends Component {
                         return
                     }
 
+                    const { request } = this.state
                     if (this.state.charging)
                         _.each(data.transactions, tx => {
-                            web3.eth.getTransaction(tx, (err, data) => {
+                            web3.eth.getTransaction(tx, (err, transaction) => {
                                 if (err)
                                     console.error(err)
-                                console.log(data)
-                                const methodId = '2535f762'
-                                // const to = 
-                                const decoded = decoder.decodeMethod(data.input)
-                                debugger
+
+                                const receiptHex = utils.utf8ToHex(this.state.request.receipt)
+                                const value = web3.toWei(request.grandTotal)
+                                const encoded = '0x' + abi.simpleEncode('transferWithData(address,uint256,bytes):(bool)', store.get('address'), value, Buffer.from(receiptHex.slice(2), 'hex')).toString('hex')
+                                if (transaction.input === encoded && transaction.to.toLowerCase() === ('0x3E50BF6703Fc132A94E4BAfF068db2055655f11B').toLowerCase()) {
+                                    const requests = store.get('requests')
+                                    const i = _.findIndex(requests, r => utils.utf8ToHex(r.receipt) === receiptHex)
+                                    requests[i].payment = transaction
+                                    store.set('requests', requests)
+                                    store.set('order', [])
+                                    this.setState({ order: [], paidOrder: this.state.order, payment: transaction })
+                                }
                             })
                         })
                 })
@@ -75,23 +89,30 @@ export default class Register extends Component {
     }
 
     render() {
-        const menuItems = store.get('menu', [])
+        const menuItems = _.sortBy(store.get('menu', []), 'name')
 
         const menuRows = _.map(menuItems, (item, i) => {
             return <MenuItem icon='plus-square' item={item} key={i} onClick={this.addItem.bind(this)} />
         })
 
-        const { order } = this.state
+        const { order, payment, charging, request, paidOrder } = this.state
         const ordersLength = order.length
 
-        const orderRows = _.map(order, (item, i) => {
-            return <MenuItem item={item} icon='trash' key={i} onClick={this.removeItem.bind(this, i)} />
+        const activeOrder = paidOrder || order
+
+        const orderRows = _.map(activeOrder, (item, i) => {
+            const onClick = !charging && this.removeItem.bind(this, i)
+            return <MenuItem item={item} icon='trash' key={i} onClick={onClick} />
         })
 
-        const leftButton = <Button onClick={this.openModal.bind(this)} style={{fontSize: '1em'}} className='text-light' color='plain'><FontAwesomeIcon icon='cash-register' /><sub><Badge color='secondary'>{ordersLength}</Badge></sub></Button>
+        const leftButton = <Button onClick={this.openModal.bind(this)} style={{fontSize: '1em'}} className='text-light' color='plain'>
+            <FontAwesomeIcon icon='cash-register' />
+                {ordersLength > 0 && <sub style={{marginLeft: '-0.5em'}}><Badge color='danger'>{ordersLength}</Badge></sub>}
+            </Button>
 
-        const grandTotal = _.sumBy(order, i => parseFloat(i.price))
-
+        // TODO use a proper math library
+        const grandTotal = calculateTotal(activeOrder)
+        console.log(activeOrder, grandTotal)
         const orderBreakdown = <ListGroup>
             <ListGroupItem color='light'>
                 <div className='d-flex justify-content-between'>
@@ -118,11 +139,21 @@ export default class Register extends Component {
                     Order Summary
                 </ModalHeader>
                 <ModalBody>
-                    {orderBreakdown}
+                    {activeOrder.length > 0 && <div>
+                        {orderBreakdown}
 
-                    <Button onClick={this.createChargeRequest.bind(this)} block color='primary' className='mt-2'>
-                        <small><b>REQUEST {grandTotal}</b></small>
-                    </Button>
+                        <Button onClick={this.createChargeRequest.bind(this)} block color='primary' className='mt-2'>
+                            <small><b>REQUEST ${grandTotal}</b></small>
+                        </Button>
+                    </div>}
+
+                    {activeOrder.length === 0 && <div className='text-center'>
+                        <h3>Order Is Empty</h3>
+                        <h1>
+                            <FontAwesomeIcon icon='exclamation-circle' />
+                        </h1>
+                        <span>Add some items to this order to get started.</span>
+                    </div>}
                 </ModalBody>
             </Modal>
 
@@ -132,17 +163,36 @@ export default class Register extends Component {
                 </ModalHeader>
 
                 <ModalBody>
-                    <div className='d-flex text-center align-items-center flex-column'>
-                        <span><small><b>{store.get('store').name} requests ${grandTotal}</b></small></span>
-                        <QRCode size='128' level='L' value={this.state.chargeURL} />
-                        <span>
-                            <small>
-                                <b>
-                                    Scan this code to complete your purchase.
-                                </b>
-                            </small>
-                        </span>
-                    </div>
+                    {<div className='d-flex text-center align-items-center flex-column'>
+                        {payment === null && <div className='d-flex text-center align-items-center flex-column'>
+                            <span><small><b>{store.get('store').name} requests ${grandTotal}</b></small></span>
+                            <QRCode size={128} level='L' value={this.state.chargeURL} />
+                            <span>
+                                <small>
+                                    <b>
+                                        Scan this code to complete your purchase.
+                                    </b>
+                                </small>
+                            </span>
+                        </div>}
+
+                        {payment !== null && <div>
+                            <h3>Success!</h3>
+                            <h1 className='text-success'>
+                                <FontAwesomeIcon icon='check-circle' />
+                            </h1>
+                            <span>
+                                <small>
+                                    <b>
+                                        Completed payment of ${request.grandTotal}.
+                                    </b>
+                                    <br />
+                                    <a href={`https://blockscout.com/poa/dai/tx/${payment.hash}`} target='_blank'>View on BlockScout</a>
+                                </small>
+                            </span>
+                        </div>}
+                    </div>}
+
                     {orderBreakdown}
 
                     <Button onClick={this.closeChargingModal.bind(this)} className='mt-3' color='primary' block={true}>Done</Button>
@@ -153,28 +203,31 @@ export default class Register extends Component {
 
     closeChargingModal() {
         store.set('order', [])
-        this.setState({ order: [] })
-        this.setState({ charging: false })
+        this.setState({ order: [], payment: null, charging: false, paidOrder: null })
     }
 
     createChargeRequest() {
         this.closeModal()
         const order = store.get('order', [])
-        const grandTotal = _.sumBy(order, i => parseFloat(i.price))
+        const requests = store.get('requests', [])
+        const id = (10000 + requests.length).toString()
+        const grandTotal = calculateTotal(order)
         const address = store.get('address')
         let receipt = _.map(store.get('order'), itemReceiptLine).join("\n")
         receipt += "\n" + itemReceiptLine({ price: grandTotal.toString(), name: 'TOTAL' })
+        receipt += `\n#${id}`
         const receiptURL = encodeURIComponent(receipt)
         const chargeURL = process.env.REACT_APP_BURNER_URL + `/${address.toLowerCase()};${grandTotal};${receiptURL}`
-        console.log(chargeURL)
-        const requests = store.get('requests', [])
-        requests.push({
+
+        const request = {
+            id,
             url: chargeURL,
             receipt,
             grandTotal
-        })
+        }
+        requests.push(request)
         store.set('requests', requests)
-        this.setState({ chargeURL, charging: true })
+        this.setState({ chargeURL, request, charging: true })
     }
 
     openModal() {
@@ -204,6 +257,14 @@ export default class Register extends Component {
         const { history } = this.props
         history.replace('/')
     }
+}
+
+function calculateTotal(order) {
+    let bn = web3.toBigNumber(0)
+    _.each(order, o => {
+        bn = bn.add(parseFloat(o.price))
+    })
+    return bn.toFixed(2)
 }
 
 function itemReceiptLine(item) {

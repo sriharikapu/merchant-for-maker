@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { Button } from 'reactstrap'
-import signIn from 'sign-in-with-burner'
-import store from 'store'
 import logo from '../logo.svg'
+import connect from '../lib/connect';
 
 export default class Splash extends Component {
     render() {
@@ -58,16 +57,9 @@ export default class Splash extends Component {
     }
 
     signIn() {
-        signIn({
-            burnerUrl: process.env.REACT_APP_BURNER_URL + '/login',
-            siteName: `Merchant for ${process.env.REACT_APP_BURNER_NAME}`
-        })
-        .then(address => {
-            store.set('address', address)
+        connect()
+        .then(() => {
             this.props.history.push('/store/new')
-        })
-        .catch(e => {
-
         })
     }
 }

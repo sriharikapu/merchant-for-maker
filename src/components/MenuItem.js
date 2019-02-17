@@ -5,7 +5,7 @@ import { Button, ListGroupItem } from 'reactstrap'
 
 export default class MenuItem extends Component {
     render() {
-        const { item, icon } = this.props
+        const { item, icon, onClick } = this.props
 
         return <ListGroupItem>
             <div className='d-flex justify-content-between align-items-end'>
@@ -13,9 +13,9 @@ export default class MenuItem extends Component {
                 <div className='d-flex align-items-center'>
                     ${item.price}
 
-                    <Button onClick={this.callback.bind(this)} color='plain'>
+                    {onClick && <Button onClick={this.callback.bind(this)} color='plain'>
                         <FontAwesomeIcon icon={icon} />
-                    </Button>
+                    </Button>}
                 </div>
             </div>
         </ListGroupItem>

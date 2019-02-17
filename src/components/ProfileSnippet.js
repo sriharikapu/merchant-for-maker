@@ -16,7 +16,8 @@ export default class ProfileSnippet extends Component {
                     <div className='d-flex'>
                         {!leftButton && <Link to='/register' className='text-light'><FontAwesomeIcon icon='cash-register'></FontAwesomeIcon></Link>}
                         {leftButton && leftButton}
-                        <Link to='/orders' className='text-light ml-3'><FontAwesomeIcon icon='history'></FontAwesomeIcon></Link>
+                        <Link to='/orders' className='text-light ml-3'>
+                        <FontAwesomeIcon icon='history'></FontAwesomeIcon></Link>
                     </div>
                     <Link to='/settings' className='text-light'><FontAwesomeIcon icon='cog'></FontAwesomeIcon></Link>
                 </div>

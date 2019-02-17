@@ -14,9 +14,11 @@ import Orders from './pages/Orders'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faCashRegister, faCog, faTrash, faPlusSquare, faCheckCircle, faHistory, faQrcode } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCashRegister, faCog, faTrash, faPlusSquare, faCheckCircle,
+  faHistory, faQrcode, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 
-library.add(fab, faCashRegister, faCog, faTrash, faPlusSquare, faCheckCircle, faHistory, faQrcode)
+library.add(fab, faCashRegister, faCog, faTrash, faPlusSquare, faCheckCircle, faHistory, faQrcode, faExclamationCircle)
 
 class App extends Component {
   render() {

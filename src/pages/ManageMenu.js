@@ -26,15 +26,17 @@ export default class ManageMenu extends Component {
     }
     render() {
         const { menuItems, success } = this.state
-
+        
         const menuRows = _.map(menuItems, (item, i) => {
             return <MenuItem item={item} key={i} icon='trash' onClick={this.deleteMenuItem.bind(this)} />
         })
 
         return <div>
             <ProfileSnippet />
-            <h3>Add Menu Items</h3>
-            <Button color='primary' onClick={this.openModal.bind(this)}>Add Menu Item</Button>
+            <div className='p-2 d-flex justify-content-between align-items-center'>
+                <h3>Your Menu</h3>
+                <Button color='primary' onClick={this.openModal.bind(this)}>Add Menu Item</Button>
+            </div>
 
             {menuRows}
 
@@ -124,7 +126,8 @@ export default class ManageMenu extends Component {
         this.setState({
             showModal: false,
             name: null,
-            price: null
+            price: null,
+            success: false
         })
     }
 
