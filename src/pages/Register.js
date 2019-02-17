@@ -7,6 +7,13 @@ import store from 'store'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import QRCode from 'qrcode.react'
+import web3 from '../lib/web3';
+import decoder from 'abi-decoder'
+
+decoder.addABI([
+    {"inputs": [{"type": "address", "name": ""}, { type: 'uint256', name: ''}, { type: 'string', name: ''}], "constant": false, "name": "transfer", "payable": false, "outputs": [{"type": "bool", "name": ""}], "type": "function"}])
+
+console.log(decoder.decodeMethod('0x2535f762000000000000000000000000e3d2c458dcf6a3614d50e358f675f6474f73a721000000000000000000000000000000000000000000000000002386f26fc100000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000003d4368656170696520202020202020202020202020202020202020302e30310a544f54414c202020202020202020202020202020202020202020302e3031000000'))
 
 export default class Register extends Component {
     constructor() {
@@ -18,8 +25,55 @@ export default class Register extends Component {
         }
     }
 
+    componentWillMount() {
+        console.log('initialize filter for transactions to ', store.get('address'))
+        let blockNumber
+
+        web3.eth.getTransactionCount(store.get('address'), console.log)
+        web3.eth.getBlockNumber((err, num) => {
+            blockNumber = num
+
+            this.poll = setInterval(() => {
+                web3.eth.getBlock(blockNumber + 1, (err, data) => {
+                    if (err)
+                        console.error(err)
+
+                    if (data) {
+                        blockNumber += 1
+                    }
+
+                    if (err || data == null || data.transactions.length === 0) {
+                        return
+                    }
+
+                    if (this.state.charging)
+                        _.each(data.transactions, tx => {
+                            web3.eth.getTransaction(tx, (err, data) => {
+                                if (err)
+                                    console.error(err)
+                                console.log(data)
+                                const decoded = decoder.decodeMethod(data.input)
+                                debugger
+                            })
+                        })
+                })
+            }, 3000)
+        })
+        // this.filter = web3.eth.filter({ fromBlock: 'latest' }).watch((err, tx) => {
+        //     if (err) console.error(err)
+        //     if (tx)
+        //         web3.eth.getTransaction(tx, (err, data) => {
+        //             console.log(data)
+        //         })
+        // })
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.poll)
+    }
+
     render() {
-        const menuItems = JSON.parse(localStorage.menu)
+        const menuItems = store.get('menu', [])
 
         const menuRows = _.map(menuItems, (item, i) => {
             return <MenuItem icon='plus-square' item={item} key={i} onClick={this.addItem.bind(this)} />
@@ -108,12 +162,14 @@ export default class Register extends Component {
         const address = store.get('address')
         let receipt = _.map(store.get('order'), itemReceiptLine).join("\n")
         receipt += "\n" + itemReceiptLine({ price: grandTotal.toString(), name: 'TOTAL' })
-        receipt = encodeURIComponent(receipt)
-        const chargeURL = process.env.REACT_APP_BURNER_URL + `/${address.toLowerCase()};${grandTotal};${receipt}`
+        const receiptURL = encodeURIComponent(receipt)
+        const chargeURL = process.env.REACT_APP_BURNER_URL + `/${address.toLowerCase()};${grandTotal};${receiptURL}`
         console.log(chargeURL)
         const requests = store.get('requests', [])
         requests.push({
-            url: chargeURL
+            url: chargeURL,
+            receipt,
+            grandTotal
         })
         store.set('requests', requests)
         this.setState({ chargeURL, charging: true })

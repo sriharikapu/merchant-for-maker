@@ -13,8 +13,11 @@ export default class ProfileSnippet extends Component {
                 background: '#222'
             }}>
                 <div className='d-flex justify-content-between p-2' style={{fontSize: '2em'}}>
-                    {!leftButton && <Link to='/register' className='text-light'><FontAwesomeIcon icon='cash-register'></FontAwesomeIcon></Link>}
-                    {leftButton && leftButton}
+                    <div className='d-flex'>
+                        {!leftButton && <Link to='/register' className='text-light'><FontAwesomeIcon icon='cash-register'></FontAwesomeIcon></Link>}
+                        {leftButton && leftButton}
+                        <Link to='/orders' className='text-light ml-3'><FontAwesomeIcon icon='history'></FontAwesomeIcon></Link>
+                    </div>
                     <Link to='/settings' className='text-light'><FontAwesomeIcon icon='cog'></FontAwesomeIcon></Link>
                 </div>
             </div>
