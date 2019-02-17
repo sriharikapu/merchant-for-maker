@@ -52,6 +52,8 @@ export default class Register extends Component {
                                 if (err)
                                     console.error(err)
                                 console.log(data)
+                                const methodId = '2535f762'
+                                // const to = 
                                 const decoded = decoder.decodeMethod(data.input)
                                 debugger
                             })
