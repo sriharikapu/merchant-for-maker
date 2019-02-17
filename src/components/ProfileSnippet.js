@@ -22,8 +22,16 @@ export default class ProfileSnippet extends Component {
                     <Link to='/settings' className='text-light'><FontAwesomeIcon icon='cog'></FontAwesomeIcon></Link>
                 </div>
             </div>
-            <div className='d-flex flex-column align-items-center' style={{marginTop: '-50px'}}>
-                <img className='shadow rounded-circle border-info' width='100' src={image} />
+            <div className='d-flex flex-column align-items-center' style={{marginTop: '-4em'}}>
+                <div className='shadow rounded-circle' style={{
+                    height: '8em',
+                    width: '8em',
+                    backgroundImage: `url("${image}")`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    border: '4px solid white'
+                }}></div>
+                {/* <img className='shadow rounded-circle border-info' width='100' src={image} /> */}
                 <h5>{name}</h5>
             </div>
         </div>
