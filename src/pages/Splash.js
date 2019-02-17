@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Button } from 'reactstrap'
-import logo from '../logo.svg'
 import connect from '../lib/connect';
+
+const logo = '/logo.png'
 
 const slides = [
     { img: 'create-order', name: 'Create Order' },
