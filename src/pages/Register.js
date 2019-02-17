@@ -166,7 +166,7 @@ export default class Register extends Component {
                     {<div className='d-flex text-center align-items-center flex-column'>
                         {payment === null && <div className='d-flex text-center align-items-center flex-column'>
                             <span><small><b>{store.get('store').name} requests ${grandTotal}</b></small></span>
-                            <QRCode size={128} level='L' value={this.state.chargeURL} />
+                            <QRCode size={200} level='L' value={this.state.chargeURL} />
                             <span>
                                 <small>
                                     <b>
