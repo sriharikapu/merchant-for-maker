@@ -11,6 +11,7 @@ import web3 from '../lib/web3';
 import decoder from 'abi-decoder'
 import abi from 'ethereumjs-abi'
 import * as utils from 'web3-utils'
+import ReactHowler from 'react-howler'
 
 decoder.addABI([
     {"inputs": [{"type": "address", "name": ""}, { type: 'uint256', name: ''}, { type: 'string', name: ''}], "constant": false, "name": "transfer", "payable": false, "outputs": [{"type": "bool", "name": ""}], "type": "function"}])
@@ -177,6 +178,10 @@ export default class Register extends Component {
                         </div>}
 
                         {payment !== null && <div>
+                            <ReactHowler
+                                src='/cash.mp3'
+                                playing={true}
+                            />
                             <h3>Success!</h3>
                             <h1 className='text-success'>
                                 <FontAwesomeIcon icon='check-circle' />
