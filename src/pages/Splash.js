@@ -3,9 +3,15 @@ import { Button } from 'reactstrap'
 import logo from '../logo.svg'
 import connect from '../lib/connect';
 
+const slides = [
+    { img: 'create-order', name: 'Create Order' },
+    { img: 'charge-customer', name: 'Charge Customer' },
+    { img: 'cash-out', name: 'Cash Out' }
+]
+
 export default class Splash extends Component {
     render() {
-        return <div style={{minHeight: '100vh'}}>
+        return <div style={{minHeight: '100vh', backgroundImage: 'url("/geometry.png")'}}>
             <div className='full-height d-flex flex-column pb-5'>
                 <div className='d-flex justify-content-around align-items-center m-3'>
                     {/* <div className='w-25 d-flex justify-content-between'>
@@ -17,6 +23,10 @@ export default class Splash extends Component {
                         <a onClick={this.signIn.bind(this)}>Connect to {process.env.REACT_APP_BURNER_NAME}</a>
                     </div> */}
                 </div>
+                {/* <div style={{maxWidth: '320px'}}>
+                    <img className='w-100' src='/screenshots/create-order.png' />
+                    Create an Order
+                </div> */}
                 <div className='d-flex justify-content-center flex-grow-1'>
                     <div className='text-center d-flex flex-grow flex-column justify-content-center'>
                         <div style={{maxWidth: '18em', margin: '0 auto'}} >
