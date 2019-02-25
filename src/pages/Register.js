@@ -63,7 +63,15 @@ export default class Register extends Component {
                                 const receiptHex = utils.utf8ToHex(this.state.request.receipt)
                                 const value = web3.toWei(request.grandTotal)
                                 const encoded = '0x' + abi.simpleEncode('transferWithData(address,uint256,bytes):(bool)', store.get('address'), value, Buffer.from(receiptHex.slice(2), 'hex')).toString('hex')
-                                if (transaction.input === encoded && transaction.to.toLowerCase() === ('0x3E50BF6703Fc132A94E4BAfF068db2055655f11B').toLowerCase()) {
+                                const currency = process.env.REACT_APP_BURNER_NAME
+                                if (currency === 'BuffiDai' && transaction.input === encoded && transaction.to.toLowerCase() === ('0x3E50BF6703Fc132A94E4BAfF068db2055655f11B').toLowerCase()) {
+                                    const requests = store.get('requests')
+                                    const i = _.findIndex(requests, r => utils.utf8ToHex(r.receipt) === receiptHex)
+                                    requests[i].payment = transaction
+                                    store.set('requests', requests)
+                                    store.set('order', [])
+                                    this.setState({ order: [], paidOrder: this.state.order, payment: transaction })
+                                } else if (currency === 'xDai' && transaction.input === receiptHex && transaction.to.toLowerCase() === store.get('address').toLowerCase()) {
                                     const requests = store.get('requests')
                                     const i = _.findIndex(requests, r => utils.utf8ToHex(r.receipt) === receiptHex)
                                     requests[i].payment = transaction
